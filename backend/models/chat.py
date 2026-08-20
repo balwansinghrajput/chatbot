@@ -56,11 +56,11 @@ class MessageIn(BaseModel):
     role: Literal["user", "assistant"]
     content: str
 
-
 class StreamRequest(BaseModel):
     messages: list[MessageIn]
     thinking_level: ThinkingLevel = "medium"
     web_search: bool = False
+    use_rag: bool = True
 
 
 # ─── DB Serialization Helpers ────────────────────────────────────────────────

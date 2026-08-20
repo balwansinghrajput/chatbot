@@ -156,8 +156,8 @@ const Sidebar: React.FC = () => {
               <Bot size={16} className="text-white" />
             </div>
             <div>
-              <h1 className="text-sm font-bold text-white tracking-tight">InklingAI</h1>
-              <p className="text-xs text-slate-500">Powered by NVIDIA</p>
+              <h1 className="text-sm font-bold text-white tracking-tight">M00</h1>
+              <p className="text-xs text-slate-500">by Balwan Singh Rajput</p>
             </div>
           </div>
           <button
@@ -232,7 +232,7 @@ const Sidebar: React.FC = () => {
 
         {/* Footer */}
         <div className="px-4 py-3 border-t border-white/5">
-          <p className="text-xs text-slate-600 text-center">thinkingmachines/inkling</p>
+          <p className="text-xs text-slate-600 text-center">M00 &copy; Balwan Singh Rajput</p>
         </div>
       </aside>
     </>

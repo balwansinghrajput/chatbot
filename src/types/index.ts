@@ -6,8 +6,15 @@ export interface SearchSource {
   title: string;
   href: string;
   body: string;
-  favicon: string; // URL to the favicon image
-  domain: string;  // e.g. "example.com"
+  favicon: string;
+  domain: string;
+}
+
+export interface UrlContext {
+  url: string;
+  title: string;
+  content: string;
+  page_type: string;
 }
 
 export interface Message {

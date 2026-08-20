@@ -32,10 +32,10 @@ const WelcomeScreen: React.FC = () => {
       </div>
 
       <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">
-        How can I help you today?
+        Hi, I'm <span className="text-blue-400">M00</span>
       </h2>
       <p className="text-slate-400 text-sm mb-10 max-w-md">
-        I'm powered by <span className="text-blue-400 font-medium">thinkingmachines/inkling</span> via NVIDIA. 
+        Your advanced AI assistant created by <span className="text-blue-400 font-medium">Balwan Singh Rajput</span>.
         Ask me anything — I reason deeply before answering.
       </p>
 

@@ -65,6 +65,33 @@ export async function apiDeleteChat(chatId: string): Promise<void> {
   if (!res.ok && res.status !== 204) throw new Error(`Failed to delete chat: ${res.status}`);
 }
 
+// ─── Scraping ────────────────────────────────────────────────────────────────
+
+export interface UrlContext {
+  url: string;
+  title: string;
+  content: string;
+  page_type: string;
+}
+
+export interface ScrapeResponse extends UrlContext {
+  metadata: Record<string, unknown>;
+  char_count: number;
+}
+
+export async function apiScrapeUrl(url: string, maxChars = 10000): Promise<ScrapeResponse> {
+  const res = await fetch(`${BASE}/scrape`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ url, max_chars: maxChars }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'Scraping failed' }));
+    throw new Error(err.detail ?? `Server error ${res.status}`);
+  }
+  return res.json();
+}
+
 // ─── SSE Streaming ───────────────────────────────────────────────────────────
 
 export interface StreamEvent {

@@ -15,6 +15,35 @@ def _get_client() -> AsyncOpenAI:
         base_url=settings.nvidia_base_url,
     )
 
+async def get_completion(
+    messages: list[dict],
+    model: str | None = None,
+    max_tokens: int = 256,
+) -> str | None:
+    """Non-streaming completion for lightweight agentic tasks."""
+    settings = get_settings()
+    client = _get_client()
+    try:
+        # Use a faster, smaller model if available for logic tasks, fallback to main model
+        target_model = model or "nvidia/llama-3.1-8b-instruct"
+        # We can also just use the main model if preferred, but a fast model is better for internal routing
+        # Wait, let's use the main model by default to avoid permission issues with other models on the API key
+        target_model = model or settings.nvidia_model
+        
+        response = await client.chat.completions.create(
+            model=target_model,
+            messages=messages,
+            temperature=0.0,
+            max_tokens=max_tokens,
+            stream=False,
+        )
+        if response.choices and response.choices[0].message:
+            return response.choices[0].message.content
+        return None
+    except Exception as e:
+        print(f"[NVIDIA Agent] Completion error: {e}")
+        return None
+
 
 async def stream_completion(
     messages: list[dict],

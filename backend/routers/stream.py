@@ -9,7 +9,11 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 from database.db import get_db
 from models.chat import StreamRequest, serialize_message
 from services.nvidia import stream_completion
-from services.search import build_search_system_prompt
+from services.knowledge_base import get_identity_prompt
+from services.rag import retrieve, format_rag_context
+from services.scraper import scrape, format_url_context
+from services.nvidia import get_completion
+import re
 
 router = APIRouter(prefix="/api/chats", tags=["stream"])
 
@@ -81,15 +85,149 @@ async def stream_chat(
             {"$set": {"title": title, "updated_at": now}},
         )
 
-    # ── 3. Build system prompt (with optional DuckDuckGo context) ─────────────
+    # ── 3. Build system prompt ───────────────────────────────────────────────────
+    # Layer order: [Identity] + [URL Contexts] + [RAG] + [Web Search]
+    # The identity block (M00/Balwan) is always first.
     sources: list[dict] = []
-    if body.web_search:
-        system_prompt, sources = await build_search_system_prompt(last_user.content)
-    else:
-        system_prompt = (
-            "You are a helpful AI assistant with deep reasoning capabilities. "
-            "Answer questions thoughtfully and precisely."
+    rag_chunks: list[dict] = []
+    url_contexts: list[dict] = []
+
+    # Extract URLs from the user's message
+    urls_to_scrape = re.findall(r'(https?://[^\s]+)', last_user.content)
+    # Deduplicate and limit to max 3 URLs to avoid overload
+    urls_to_scrape = list(dict.fromkeys(urls_to_scrape))[:3]
+
+    async def _deep_scrape(url: str, user_query: str) -> list[dict]:
+        """Scrape the url. If it has links, ask the LLM which to follow, and scrape that too."""
+        page = await scrape(url, max_chars=10000)
+        results = [page.to_dict()]
+        
+        links = page.internal_links
+        if links:
+            # Prepare a fast LLM prompt to select a link
+            links_text = "\n".join([f"- [{i}] {link['text']} ({link['href']})" for i, link in enumerate(links[:30])])
+            prompt = (
+                f"The user asked: '{user_query}'\n\n"
+                f"I am on {url} and found these internal links:\n{links_text}\n\n"
+                "If the user's query requires information that is highly likely to be found on ONE of these specific sub-pages "
+                "(e.g., pricing, about, documentation), reply ONLY with the exact URL of that sub-page. "
+                "If none of the links are highly relevant, reply with exactly 'NONE'."
+            )
+            response = await get_completion([{"role": "user", "content": prompt}], max_tokens=256)
+            if response:
+                selected = response.strip()
+                if selected.startswith("http") and selected != url:
+                    print(f"[DeepScrape] LLM selected secondary link: {selected}")
+                    try:
+                        second_page = await scrape(selected, max_chars=10000)
+                        results.append(second_page.to_dict())
+                    except Exception as e:
+                        print(f"[DeepScrape] Secondary scrape failed: {e}")
+        return results
+
+    # Run scraping, RAG, and web search concurrently
+    import asyncio as _asyncio
+    tasks = []
+    
+    # Track task types to unpack results later
+    task_types = []
+
+    for url in urls_to_scrape:
+        tasks.append(_deep_scrape(url, last_user.content))
+        task_types.append("scrape")
+
+    # Determine intent for external tools
+    use_rag = body.use_rag
+    web_search = body.web_search
+
+    if use_rag or web_search:
+        available = []
+        if web_search: available.append("web_search")
+        if use_rag: available.append("rag")
+        
+        prompt = (
+            f"Given the user's message: '{last_user.content}'\n"
+            f"Determine which external tools are strictly necessary to answer. "
+            f"Available tools: {available}. "
+            f"If the query is a simple greeting (e.g. 'hi', 'hello'), casual conversation, or a standard coding request that does not require live external data or specific internal documents, reply with exactly 'NONE'. "
+            f"Otherwise, reply with a comma-separated list of required tools from the available tools."
         )
+        intent_resp = await get_completion([{"role": "user", "content": prompt}], max_tokens=256)
+        if intent_resp:
+            ans = intent_resp.strip().lower()
+            print(f"[IntentRouter] User Query: '{last_user.content}' -> Routing to: {ans}")
+            if "none" in ans:
+                use_rag = False
+                web_search = False
+            else:
+                if "rag" not in ans: use_rag = False
+                if "web_search" not in ans and "search" not in ans: web_search = False
+
+    if use_rag:
+        tasks.append(retrieve(last_user.content, db))
+        task_types.append("rag")
+        
+    async def _search_and_crawl(query: str) -> list[dict]:
+        from services.search import search as web_search
+        # Get top 2 results to crawl to save time and token limits
+        results = await web_search(query, max_results=2)
+        if not results:
+            return []
+        
+        urls = [r.get("href") for r in results if r.get("href")]
+        if not urls:
+            return results
+            
+        print(f"[SearchCrawl] Crawling {len(urls)} live search results...")
+        scrape_tasks = [scrape(u, max_chars=8000) for u in urls]
+        pages = await _asyncio.gather(*scrape_tasks, return_exceptions=True)
+        
+        for i, page in enumerate(pages):
+            if not isinstance(page, Exception) and getattr(page, "content", None):
+                if not page.content.startswith("[Scraping failed:"):
+                    results[i]["body"] = "FULL PAGE CONTENT:\n" + page.content
+        return results
+
+    if web_search:
+        tasks.append(_search_and_crawl(last_user.content))
+        task_types.append("search")
+
+    if tasks:
+        results = await _asyncio.gather(*tasks, return_exceptions=True)
+        for t_type, res in zip(task_types, results):
+            if isinstance(res, Exception):
+                print(f"[Stream] Task {t_type} failed: {res}")
+                continue
+            
+            if t_type == "scrape":
+                # res is a list of ScrapedPage dicts
+                url_contexts.extend(res)
+            elif t_type == "rag":
+                rag_chunks = res
+            elif t_type == "search":
+                sources = res
+
+    # Build the layered system prompt
+    system_parts = [get_identity_prompt()]
+
+    # URL contexts come first (user-provided, highest specificity)
+    if url_contexts:
+        url_ctx = format_url_context(url_contexts)
+        system_parts.append(url_ctx)
+
+    if rag_chunks:
+        rag_ctx = format_rag_context(rag_chunks)
+        system_parts.append(rag_ctx)
+
+    if web_search and sources:
+        from services.search import format_search_context
+        web_ctx = format_search_context(sources, query=last_user.content)
+        system_parts.append(
+            "When using information from the web search results, cite the source number like [1], [2] etc. "
+            "and also explicitly include the full URL of the source in your response.\n\n" + web_ctx
+        )
+
+    system_prompt = "\n\n---\n\n".join(system_parts)
 
     # ── 4. Build message list for NVIDIA API ──────────────────────────────────
     api_messages = [{"role": "system", "content": system_prompt}]

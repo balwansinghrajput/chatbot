@@ -8,6 +8,10 @@ class Settings(BaseSettings):
     nvidia_api_key: str = ""
     nvidia_base_url: str = "https://integrate.api.nvidia.com/v1"
     nvidia_model: str = "thinkingmachines/inkling"
+    nvidia_embedding_model: str = "nvidia/nv-embedqa-e5-v5"
+    nvidia_embedding_dims: int = 1024
+
+    brave_search_api_key: str = ""
 
     mongodb_uri: str = "mongodb://localhost:27017"
     db_name: str = "chatbot"
