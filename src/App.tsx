@@ -6,7 +6,7 @@ import ThinkingIndicator from './components/ThinkingIndicator';
 import InputArea from './components/InputArea';
 import WelcomeScreen from './components/WelcomeScreen';
 import { useChatStore } from './store/chatStore';
-import { streamMessage, type MessagePayload, type SearchSource } from './lib/api';
+import { streamMessage, type MessagePayload, type SearchSource, type ImageResult } from './lib/api';
 
 const App: React.FC = () => {
   const {
@@ -84,6 +84,7 @@ const App: React.FC = () => {
       let accContent = '';
       let accThinking = '';
       let accSources: SearchSource[] = [];
+      let accImages: ImageResult[] = [];
 
       await streamMessage(
         targetChatId,
@@ -137,6 +138,14 @@ const App: React.FC = () => {
           accSources = sources;
           updateMessage(targetChatId!, tempAssistantId, {
             sources,
+            isStreaming: true,
+          });
+        },
+        // onImages
+        (images) => {
+          accImages = images;
+          updateMessage(targetChatId!, tempAssistantId, {
+            images,
             isStreaming: true,
           });
         },

@@ -16,6 +16,8 @@ class Settings(BaseSettings):
     mongodb_uri: str = "mongodb://localhost:27017"
     db_name: str = "chatbot"
 
+    redis_url: str = ""
+
     cors_origins: str = "http://localhost:5173,http://localhost:5174"
 
     @property

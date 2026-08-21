@@ -13,6 +13,7 @@ import re
 from urllib.parse import urlparse
 
 from config import get_settings
+from services.cache import cached, SEARCH_TTL
 
 
 BRAVE_SEARCH_URL = "https://api.search.brave.com/res/v1/web/search"
@@ -138,6 +139,7 @@ async def _ddg_search(query: str, max_results: int) -> list[dict]:
 
 # ─── Public entry point ───────────────────────────────────────────────────────
 
+@cached("search", ttl=SEARCH_TTL, key_fn=lambda query, max_results=5: f"{query}:{max_results}")
 async def search(query: str, max_results: int = 5) -> list[dict]:
     """
     Search the web for `query`.

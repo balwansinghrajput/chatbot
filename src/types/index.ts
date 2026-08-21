@@ -10,6 +10,15 @@ export interface SearchSource {
   domain: string;
 }
 
+export interface ImageResult {
+  url: string;
+  thumbnail: string;
+  title: string;
+  source: string;
+  width: number;
+  height: number;
+}
+
 export interface UrlContext {
   url: string;
   title: string;
@@ -23,6 +32,7 @@ export interface Message {
   content: string;
   thinking?: string;
   sources?: SearchSource[];
+  images?: ImageResult[];
   timestamp: Date;
   isStreaming?: boolean;
 }

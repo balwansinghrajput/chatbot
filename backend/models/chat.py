@@ -46,9 +46,9 @@ class ChatOut(BaseModel):
 ThinkingLevel = Literal["low", "medium", "high"]
 
 THINKING_BUDGETS: dict[str, int] = {
-    "low": 1024,
-    "medium": 4096,
-    "high": 8192,
+    "low":    2_048,   # fast, short answers
+    "medium": 8_192,   # standard balanced responses
+    "high":   32_768,  # detailed, long-form analysis
 }
 
 

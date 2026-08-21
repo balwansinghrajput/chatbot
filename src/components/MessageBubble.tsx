@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { Bot, User, ChevronDown, ChevronRight, Copy, Check, Globe, ExternalLink } from 'lucide-react';
+import { Bot, User, ChevronDown, ChevronRight, Copy, Check, Globe, ExternalLink, Image as ImageIcon, X, ZoomIn } from 'lucide-react';
 import type { Message } from '../types';
 
 interface MessageBubbleProps {
@@ -12,12 +12,21 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
   const isUser = message.role === 'user';
   const [thinkingExpanded, setThinkingExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
+  const [lightboxTitle, setLightboxTitle] = useState<string>('');
+  const [failedImages, setFailedImages] = useState<Set<number>>(new Set());
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(message.content);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
+
+  const handleImageError = (index: number) => {
+    setFailedImages((prev) => new Set(prev).add(index));
+  };
+
+  const validImages = message.images?.filter((_, i) => !failedImages.has(i)) ?? [];
 
   return (
     <div className={`flex gap-3 group ${isUser ? 'flex-row-reverse' : 'flex-row'} mb-6`}>
@@ -54,6 +63,41 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {/* Image Gallery */}
+        {!isUser && validImages.length > 0 && (
+          <div className="w-full">
+            <div className="flex items-center gap-1.5 mb-2.5">
+              <ImageIcon size={12} className="text-violet-400" />
+              <span className="text-xs text-slate-400 font-medium">Images</span>
+              <span className="text-xs text-slate-600 ml-1">· {validImages.length} found</span>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              {validImages.slice(0, 6).map((img, i) => (
+                <div
+                  key={i}
+                  className="relative aspect-square rounded-xl overflow-hidden cursor-pointer group/img bg-white/5 border border-white/8 hover:border-violet-500/40 transition-all duration-200 shadow-lg hover:shadow-violet-500/10"
+                  onClick={() => { setLightboxUrl(img.url); setLightboxTitle(img.title); }}
+                >
+                  <img
+                    src={img.thumbnail || img.url}
+                    alt={img.title}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover/img:scale-110"
+                    onError={() => handleImageError(i)}
+                    loading="lazy"
+                  />
+                  {/* Hover overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-200 flex items-end justify-between p-2">
+                    <span className="text-xs text-white/80 truncate leading-tight line-clamp-2 max-w-[80%]">
+                      {img.title}
+                    </span>
+                    <ZoomIn size={14} className="text-white flex-shrink-0" />
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
@@ -172,6 +216,36 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
           </div>
         )}
       </div>
+
+      {/* Lightbox */}
+      {lightboxUrl && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+          onClick={() => setLightboxUrl(null)}
+        >
+          <div
+            className="relative max-w-4xl max-h-[90vh] rounded-2xl overflow-hidden shadow-2xl border border-white/10"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={lightboxUrl}
+              alt={lightboxTitle}
+              className="max-w-full max-h-[85vh] object-contain"
+            />
+            {lightboxTitle && (
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent px-4 py-3">
+                <p className="text-sm text-white/90 truncate">{lightboxTitle}</p>
+              </div>
+            )}
+            <button
+              className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/50 hover:bg-black/80 flex items-center justify-center text-white transition-colors"
+              onClick={() => setLightboxUrl(null)}
+            >
+              <X size={16} />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

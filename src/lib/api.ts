@@ -95,10 +95,20 @@ export async function apiScrapeUrl(url: string, maxChars = 10000): Promise<Scrap
 // ─── SSE Streaming ───────────────────────────────────────────────────────────
 
 export interface StreamEvent {
-  type: 'thinking' | 'content' | 'done' | 'error' | 'sources';
+  type: 'thinking' | 'content' | 'done' | 'error' | 'sources' | 'images';
   text?: string;
   message_id?: string;
   sources?: SearchSource[];
+  images?: ImageResult[];
+}
+
+export interface ImageResult {
+  url: string;
+  thumbnail: string;
+  title: string;
+  source: string;
+  width: number;
+  height: number;
 }
 
 export interface SearchSource {
@@ -123,6 +133,7 @@ export async function streamMessage(
   onDone: (messageId: string) => void,
   onError: (err: string) => void,
   onSources: (sources: SearchSource[]) => void,
+  onImages: (images: ImageResult[]) => void,
   signal?: AbortSignal,
 ): Promise<void> {
   let response: Response;
@@ -171,7 +182,9 @@ export async function streamMessage(
 
         try {
           const event: StreamEvent = JSON.parse(raw);
-          if (event.type === 'sources' && event.sources) {
+          if (event.type === 'images' && event.images) {
+            onImages(event.images);
+          } else if (event.type === 'sources' && event.sources) {
             onSources(event.sources);
           } else if (event.type === 'thinking' && event.text) {
             onThinking(event.text);

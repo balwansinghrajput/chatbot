@@ -9,6 +9,7 @@ if sys.platform == "win32":
 
 from config import get_settings
 from database.db import connect, disconnect
+from services.cache import init_redis, close_redis
 from routers.chats import router as chats_router
 from routers.stream import router as stream_router
 from routers.knowledge import router as knowledge_router
@@ -17,9 +18,11 @@ from routers.scrape import router as scrape_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Startup: connect to MongoDB. Shutdown: disconnect."""
+    """Startup: connect to MongoDB + Redis. Shutdown: disconnect both."""
     await connect()
+    await init_redis()
     yield
+    await close_redis()
     await disconnect()
 
 

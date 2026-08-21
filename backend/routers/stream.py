@@ -13,6 +13,8 @@ from services.knowledge_base import get_identity_prompt
 from services.rag import retrieve, format_rag_context
 from services.scraper import scrape, format_url_context
 from services.nvidia import get_completion
+from services.context_manager import build_context_messages
+from services.cache import cache_get, cache_set, INTENT_TTL, SCRAPE_TTL
 import re
 
 router = APIRouter(prefix="/api/chats", tags=["stream"])
@@ -91,6 +93,7 @@ async def stream_chat(
     sources: list[dict] = []
     rag_chunks: list[dict] = []
     url_contexts: list[dict] = []
+    image_results: list[dict] = []
 
     # Extract URLs from the user's message
     urls_to_scrape = re.findall(r'(https?://[^\s]+)', last_user.content)
@@ -98,11 +101,23 @@ async def stream_chat(
     urls_to_scrape = list(dict.fromkeys(urls_to_scrape))[:3]
 
     async def _deep_scrape(url: str, user_query: str) -> list[dict]:
-        """Scrape the url. If it has links, ask the LLM which to follow, and scrape that too."""
-        page = await scrape(url, max_chars=10000)
-        results = [page.to_dict()]
-        
-        links = page.internal_links
+        """Scrape the url (with Redis cache). If it has links, ask the LLM which to follow."""
+        # Check page cache first
+        cached_page = await cache_get("scrape", url)
+        if cached_page:
+            print(f"[Cache] HIT  scrape:{url[:60]!r}")
+            page = type('P', (), {'to_dict': lambda _: cached_page,
+                                  'internal_links': cached_page.get('internal_links', []),
+                                  'content': cached_page.get('content', '')})()
+        else:
+            page = await scrape(url, max_chars=10000)
+            page_dict = page.to_dict()
+            await cache_set("scrape", url, page_dict, SCRAPE_TTL)
+
+        page_dict = cached_page if cached_page else page.to_dict()
+        results = [page_dict]
+        links = page_dict.get("internal_links", [])
+
         if links:
             # Prepare a fast LLM prompt to select a link
             links_text = "\n".join([f"- [{i}] {link['text']} ({link['href']})" for i, link in enumerate(links[:30])])
@@ -136,37 +151,57 @@ async def stream_chat(
         tasks.append(_deep_scrape(url, last_user.content))
         task_types.append("scrape")
 
-    # Determine intent for external tools
+    # Determine intent for external tools (including image search)
     use_rag = body.use_rag
     web_search = body.web_search
+    use_image_search = False  # always determined by intent
 
-    if use_rag or web_search:
-        available = []
-        if web_search: available.append("web_search")
-        if use_rag: available.append("rag")
-        
+    if use_rag or web_search or True:  # always run intent check for image detection
+        available_tools = []
+        if web_search: available_tools.append("web_search")
+        if use_rag: available_tools.append("rag")
+        available_tools.append("image_search")  # always available
+
         prompt = (
             f"Given the user's message: '{last_user.content}'\n"
             f"Determine which external tools are strictly necessary to answer. "
-            f"Available tools: {available}. "
-            f"If the query is a simple greeting (e.g. 'hi', 'hello'), casual conversation, or a standard coding request that does not require live external data or specific internal documents, reply with exactly 'NONE'. "
-            f"Otherwise, reply with a comma-separated list of required tools from the available tools."
+            f"Available tools: {available_tools}. "
+            f"Use 'image_search' ONLY if the user explicitly asks to see, find, show, or display images/pictures/photos (e.g. 'show me a cat image', 'find pictures of dogs'). "
+            f"Use 'web_search' ONLY for questions requiring live/current web data. "
+            f"Use 'rag' ONLY if the query requires specific internal documents. "
+            f"If the query is a simple greeting, casual conversation, or a standard coding/math/writing request, reply with exactly 'NONE'. "
+            f"Otherwise, reply with a comma-separated list of required tools from the available tools (e.g. 'image_search' or 'web_search,rag')."
         )
-        intent_resp = await get_completion([{"role": "user", "content": prompt}], max_tokens=256)
+        # Check intent cache first (same query → same tool decision)
+        intent_cache_key = f"{last_user.content}|{available_tools}"
+        intent_resp = await cache_get("intent", intent_cache_key)
+        if intent_resp is None:
+            intent_resp = await get_completion([{"role": "user", "content": prompt}], max_tokens=256)
+            if intent_resp:
+                await cache_set("intent", intent_cache_key, intent_resp, INTENT_TTL)
         if intent_resp:
             ans = intent_resp.strip().lower()
-            print(f"[IntentRouter] User Query: '{last_user.content}' -> Routing to: {ans}")
+            print(f"[IntentRouter] Query: '{last_user.content}' -> Tools: {ans}")
             if "none" in ans:
                 use_rag = False
                 web_search = False
+                use_image_search = False
             else:
+                if "image_search" in ans or "image" in ans: use_image_search = True
                 if "rag" not in ans: use_rag = False
-                if "web_search" not in ans and "search" not in ans: web_search = False
+                if "web_search" not in ans and "search" not in ans and "image" not in ans: web_search = False
+                # If it's purely an image search, no need for web_search
+                if use_image_search and "web_search" not in ans: web_search = False
 
     if use_rag:
         tasks.append(retrieve(last_user.content, db))
         task_types.append("rag")
-        
+
+    async def _image_search_task(query: str) -> list[dict]:
+        from services.image_search import search_images
+        print(f"[ImageSearch] Searching for: {query!r}")
+        return await search_images(query, max_results=6)
+
     async def _search_and_crawl(query: str) -> list[dict]:
         from services.search import search as web_search
         # Get top 2 results to crawl to save time and token limits
@@ -188,6 +223,10 @@ async def stream_chat(
                     results[i]["body"] = "FULL PAGE CONTENT:\n" + page.content
         return results
 
+    if use_image_search:
+        tasks.append(_image_search_task(last_user.content))
+        task_types.append("images")
+
     if web_search:
         tasks.append(_search_and_crawl(last_user.content))
         task_types.append("search")
@@ -200,12 +239,13 @@ async def stream_chat(
                 continue
             
             if t_type == "scrape":
-                # res is a list of ScrapedPage dicts
                 url_contexts.extend(res)
             elif t_type == "rag":
                 rag_chunks = res
             elif t_type == "search":
                 sources = res
+            elif t_type == "images":
+                image_results = res
 
     # Build the layered system prompt
     system_parts = [get_identity_prompt()]
@@ -229,11 +269,12 @@ async def stream_chat(
 
     system_prompt = "\n\n---\n\n".join(system_parts)
 
-    # ── 4. Build message list for NVIDIA API ──────────────────────────────────
-    api_messages = [{"role": "system", "content": system_prompt}]
-    for m in body.messages:
-        api_messages.append({"role": m.role, "content": m.content})
+    # ── 4. Build full-history message list for NVIDIA API ─────────────────────
+    # build_context_messages loads ALL messages from MongoDB for this chat,
+    # fits them into the model context window with smart compression if needed.
+    api_messages = await build_context_messages(chat_oid, db, system_prompt)
 
+    print(f"[Context] Sending {len(api_messages)} messages to API (incl. system).")
 
     # ── 5. Stream generator ───────────────────────────────────────────────────
     async def event_generator():
@@ -241,9 +282,20 @@ async def stream_chat(
         full_thinking = ""
         assistant_msg_id: str | None = None
 
-        # Emit sources immediately so frontend can render them right away
+        # Emit image results first (highest visual priority)
+        if image_results:
+            yield _sse("images", {"images": image_results})
+
+        # Emit sources so frontend can render them right away
         if sources:
             yield _sse("sources", {"sources": sources})
+
+        # If images found, add a system note about them into the AI context
+        # The AI should acknowledge the images in its response
+        if image_results:
+            img_note = f"\n\n[System Note: {len(image_results)} relevant images have been retrieved and displayed to the user above. Briefly acknowledge that you found and displayed the images, and optionally describe what they show.]"
+            # Inject into the last user message content in api_messages
+            api_messages[-1]["content"] = api_messages[-1]["content"] + img_note
 
         try:
             async for token_type, text in stream_completion(api_messages, body.thinking_level):
