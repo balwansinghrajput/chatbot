@@ -5,6 +5,7 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from database.db import get_db
 from models.chat import ChatCreate, ChatOut, ChatUpdate, MessageOut, serialize_message
+from services.auth import get_current_user
 
 router = APIRouter(prefix="/api/chats", tags=["chats"])
 
@@ -16,9 +17,12 @@ def _utc_now() -> datetime:
 # ─── List all chats ───────────────────────────────────────────────────────────
 
 @router.get("", response_model=list[ChatOut])
-async def list_chats(db: AsyncIOMotorDatabase = Depends(get_db)):
+async def list_chats(
+    db: AsyncIOMotorDatabase = Depends(get_db),
+    user: dict = Depends(get_current_user),
+):
     chats_col = db["chats"]
-    cursor = chats_col.find({}).sort("updated_at", -1)
+    cursor = chats_col.find({"user_id": user["_id"]}).sort("updated_at", -1)
     result = []
     async for doc in cursor:
         result.append(
@@ -35,12 +39,17 @@ async def list_chats(db: AsyncIOMotorDatabase = Depends(get_db)):
 # ─── Create chat ─────────────────────────────────────────────────────────────
 
 @router.post("", response_model=ChatOut, status_code=201)
-async def create_chat(body: ChatCreate, db: AsyncIOMotorDatabase = Depends(get_db)):
+async def create_chat(
+    body: ChatCreate,
+    db: AsyncIOMotorDatabase = Depends(get_db),
+    user: dict = Depends(get_current_user),
+):
     now = _utc_now()
     doc = {
         "title": body.title,
         "created_at": now,
         "updated_at": now,
+        "user_id": user["_id"],
     }
     res = await db["chats"].insert_one(doc)
     return ChatOut(
@@ -54,13 +63,17 @@ async def create_chat(body: ChatCreate, db: AsyncIOMotorDatabase = Depends(get_d
 # ─── Get chat + messages ──────────────────────────────────────────────────────
 
 @router.get("/{chat_id}", response_model=ChatOut)
-async def get_chat(chat_id: str, db: AsyncIOMotorDatabase = Depends(get_db)):
+async def get_chat(
+    chat_id: str,
+    db: AsyncIOMotorDatabase = Depends(get_db),
+    user: dict = Depends(get_current_user),
+):
     try:
         oid = ObjectId(chat_id)
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid chat ID")
 
-    doc = await db["chats"].find_one({"_id": oid})
+    doc = await db["chats"].find_one({"_id": oid, "user_id": user["_id"]})
     if not doc:
         raise HTTPException(status_code=404, detail="Chat not found")
 
@@ -83,7 +96,8 @@ async def get_chat(chat_id: str, db: AsyncIOMotorDatabase = Depends(get_db)):
 
 @router.patch("/{chat_id}", response_model=ChatOut)
 async def rename_chat(
-    chat_id: str, body: ChatUpdate, db: AsyncIOMotorDatabase = Depends(get_db)
+    chat_id: str, body: ChatUpdate, db: AsyncIOMotorDatabase = Depends(get_db),
+    user: dict = Depends(get_current_user),
 ):
     try:
         oid = ObjectId(chat_id)
@@ -92,7 +106,7 @@ async def rename_chat(
 
     now = _utc_now()
     res = await db["chats"].find_one_and_update(
-        {"_id": oid},
+        {"_id": oid, "user_id": user["_id"]},
         {"$set": {"title": body.title, "updated_at": now}},
         return_document=True,
     )
@@ -110,13 +124,17 @@ async def rename_chat(
 # ─── Delete chat + messages ───────────────────────────────────────────────────
 
 @router.delete("/{chat_id}", status_code=204)
-async def delete_chat(chat_id: str, db: AsyncIOMotorDatabase = Depends(get_db)):
+async def delete_chat(
+    chat_id: str,
+    db: AsyncIOMotorDatabase = Depends(get_db),
+    user: dict = Depends(get_current_user),
+):
     try:
         oid = ObjectId(chat_id)
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid chat ID")
 
-    res = await db["chats"].delete_one({"_id": oid})
+    res = await db["chats"].delete_one({"_id": oid, "user_id": user["_id"]})
     if res.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Chat not found")
 
@@ -126,12 +144,19 @@ async def delete_chat(chat_id: str, db: AsyncIOMotorDatabase = Depends(get_db)):
 # ─── Get messages for a chat ──────────────────────────────────────────────────
 
 @router.get("/{chat_id}/messages", response_model=list[MessageOut])
-async def get_messages(chat_id: str, db: AsyncIOMotorDatabase = Depends(get_db)):
+async def get_messages(
+    chat_id: str,
+    db: AsyncIOMotorDatabase = Depends(get_db),
+    user: dict = Depends(get_current_user),
+):
     try:
         oid = ObjectId(chat_id)
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid chat ID")
 
+    chat = await db["chats"].find_one({"_id": oid, "user_id": user["_id"]}, {"_id": 1})
+    if not chat:
+        raise HTTPException(status_code=404, detail="Chat not found")
     cursor = db["messages"].find({"chat_id": oid}).sort("timestamp", 1)
     result = []
     async for doc in cursor:

@@ -5,10 +5,14 @@ import MessageBubble from './components/MessageBubble';
 import ThinkingIndicator from './components/ThinkingIndicator';
 import InputArea from './components/InputArea';
 import WelcomeScreen from './components/WelcomeScreen';
+import LandingPage from './components/LandingPage';
+import AuthPage from './components/AuthPage';
+import AuthGuard from './components/AuthGuard';
 import { useChatStore } from './store/chatStore';
-import { streamMessage, type MessagePayload, type SearchSource, type ImageResult } from './lib/api';
+import { streamMessage, type MessagePayload } from './lib/api';
+import type { MediaAttachment } from './types';
 
-const App: React.FC = () => {
+const ChatApp: React.FC = () => {
   const {
     activeChatId,
     isSidebarOpen,
@@ -43,7 +47,7 @@ const App: React.FC = () => {
 
   // ── Send message ─────────────────────────────────────────────────────────
   const handleSend = useCallback(
-    async (content: string, overrideChatId?: string) => {
+    async (content: string, overrideChatId?: string, attachments: MediaAttachment[] = []) => {
       let targetChatId = overrideChatId ?? activeChatId;
 
       // Create a new chat in the backend if needed
@@ -59,7 +63,7 @@ const App: React.FC = () => {
       }
 
       // Add user message optimistically to local store for immediate display
-      addMessage(targetChatId, { role: 'user', content });
+      addMessage(targetChatId, { role: 'user', content, attachments });
 
       // Add placeholder assistant message
       const tempAssistantId = addMessage(targetChatId, {
@@ -83,17 +87,12 @@ const App: React.FC = () => {
 
       let accContent = '';
       let accThinking = '';
-      let accSources: SearchSource[] = [];
-      let accImages: ImageResult[] = [];
-
       await streamMessage(
         targetChatId,
         currentMessages,
         settings.thinkingLevel,
-        settings.webSearch,
         // onThinking
         (chunk) => {
-          setIsThinking(false);
           accThinking += chunk;
           updateMessage(targetChatId!, tempAssistantId, {
             thinking: accThinking,
@@ -135,7 +134,6 @@ const App: React.FC = () => {
         },
         // onSources
         (sources) => {
-          accSources = sources;
           updateMessage(targetChatId!, tempAssistantId, {
             sources,
             isStreaming: true,
@@ -143,13 +141,27 @@ const App: React.FC = () => {
         },
         // onImages
         (images) => {
-          accImages = images;
           updateMessage(targetChatId!, tempAssistantId, {
             images,
             isStreaming: true,
           });
         },
+        // onLinkedIn
+        (profile) => {
+          updateMessage(targetChatId!, tempAssistantId, {
+            linkedinProfile: profile,
+            isStreaming: true,
+          });
+        },
+        // onMapRoute
+        (route) => {
+          updateMessage(targetChatId!, tempAssistantId, {
+            mapRoute: route,
+            isStreaming: true,
+          });
+        },
         abortControllerRef.current.signal,
+        attachments,
       );
     },
     [
@@ -192,25 +204,23 @@ const App: React.FC = () => {
   const hasMessages = activeChat && activeChat.messages.length > 0;
 
   return (
-    <div className="flex h-screen bg-[#050b17] text-white overflow-hidden">
+    <div className="app-shell">
       {/* Sidebar */}
       <Sidebar />
 
       {/* Main content */}
       <div
-        className={`flex flex-col flex-1 transition-all duration-300 ${
-          isSidebarOpen ? 'ml-72' : 'ml-0'
-        }`}
+        className={`main-shell ${isSidebarOpen ? 'sidebar-visible' : ''}`}
       >
         {/* Header */}
         <ChatHeader />
 
         {/* Messages */}
-        <main className="flex-1 overflow-y-auto pt-16 pb-0">
+        <main className={`chat-main ${hasMessages ? 'has-messages' : ''}`}>
           {!activeChatId || !hasMessages ? (
             <WelcomeScreen />
           ) : (
-            <div className="max-w-3xl mx-auto px-4 py-6">
+            <div className="message-list">
               {activeChat.messages.map((message) => (
                 <MessageBubble key={message.id} message={message} />
               ))}
@@ -221,9 +231,9 @@ const App: React.FC = () => {
         </main>
 
         {/* Input */}
-        <div className="max-w-3xl w-full mx-auto">
+        <div className="input-dock">
           <InputArea
-            onSend={handleSend}
+            onSend={(message, attachments) => handleSend(message, undefined, attachments)}
             isStreaming={isStreaming}
             onStop={handleStop}
             disabled={false}
@@ -232,6 +242,14 @@ const App: React.FC = () => {
       </div>
     </div>
   );
+};
+
+const App: React.FC = () => {
+  const path = window.location.pathname;
+  if (path.startsWith('/app')) return <AuthGuard><ChatApp /></AuthGuard>;
+  if (path === '/login') return <AuthPage mode="login" />;
+  if (path === '/signup') return <AuthPage mode="signup" />;
+  return <LandingPage />;
 };
 
 export default App;

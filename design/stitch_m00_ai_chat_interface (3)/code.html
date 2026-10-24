@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=JetBrains+Mono:wght@100..900&display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {"darkMode":"class","theme":{"extend":{"colors":{"error":"#ffb4ab","secondary-fixed":"#d8e2ff","inverse-primary":"#006591","background":"#131315","tertiary-fixed":"#d8e3fb","primary-fixed-dim":"#89ceff","on-tertiary-container":"#293446","surface-container-lowest":"#0e0e10","inverse-surface":"#e5e1e4","inverse-on-surface":"#313032","tertiary-container":"#919cb2","outline":"#88929b","error-container":"#93000a","surface-variant":"#353437","on-primary-fixed-variant":"#004c6e","on-tertiary-fixed":"#111c2d","surface":"#131315","on-secondary-container":"#e6ecff","on-background":"#e5e1e4","surface-container-high":"#2a2a2c","on-secondary-fixed-variant":"#004395","secondary":"#adc6ff","tertiary-fixed-dim":"#bcc7de","surface-bright":"#39393b","on-error":"#690005","primary-container":"#0ea5e9","on-surface":"#e5e1e4","on-secondary":"#002e6a","on-tertiary-fixed-variant":"#3c475a","on-primary":"#00344d","on-tertiary":"#263143","surface-container":"#201f21","secondary-container":"#0566d9","on-primary-container":"#003751","surface-dim":"#131315","surface-tint":"#89ceff","on-error-container":"#ffdad6","primary":"#89ceff","on-surface-variant":"#bec8d2","surface-container-low":"#1c1b1d","secondary-fixed-dim":"#adc6ff","outline-variant":"#3e4850","primary-fixed":"#c9e6ff","surface-container-highest":"#353437","on-secondary-fixed":"#001a42","tertiary":"#bcc7de","on-primary-fixed":"#001e2f"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"gutter-md":"1.5rem","chat-max-width":"768px","sidebar-width":"280px","gutter-sm":"0.75rem","margin-page":"2rem"},"fontFamily":{"body-md":["Geist"],"headline-lg":["Geist"],"headline-xl":["Geist"],"label-md":["JetBrains Mono"],"body-sm":["Geist"],"body-lg":["Geist"],"code":["JetBrains Mono"],"label-sm":["JetBrains Mono"],"headline-md":["Geist"]},"fontSize":{"body-md":["14px",{"lineHeight":"20px","fontWeight":"400"}],"headline-lg":["24px",{"lineHeight":"32px","letterSpacing":"-0.01em","fontWeight":"600"}],"headline-xl":["32px",{"lineHeight":"40px","letterSpacing":"-0.02em","fontWeight":"600"}],"label-md":["12px",{"lineHeight":"16px","letterSpacing":"0.05em","fontWeight":"500"}],"body-sm":["13px",{"lineHeight":"18px","fontWeight":"400"}],"body-lg":["16px",{"lineHeight":"24px","fontWeight":"400"}],"code":["13px",{"lineHeight":"20px","fontWeight":"400"}],"label-sm":["11px",{"lineHeight":"14px","letterSpacing":"0.05em","fontWeight":"500"}],"headline-md":["18px",{"lineHeight":"24px","fontWeight":"500"}]}}}};</script></head><body class="bg-background font-body-md text-body-md text-on-surface min-h-screen selection:bg-primary-container selection:text-on-primary-container"><header class="fixed top-0 left-0 right-0 w-full z-50 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.4)]"><div class="h-16 w-full px-margin-page flex items-center justify-between"><div class="flex items-center gap-6"><a class="flex items-center gap-3" data-path="features" href="#"><img alt="Minimalist futuristic vector logo mark featuring the letters M00 in sleek glowing electric blue, sharp professional tech aesthetic, dark background" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1WK594dL3hckmSUFougqnGj8gzlX2grJomHzoWnFeFokxv_gZ9V-kCbPP_Fl1HnJajrq2Gp71PQ3SY7tn0O-4EFqUkz6coBra1leDd612zmHnKyCFaS4QZMSqGg8sivVAkIATmHn_pod86E9tkNer03iMMQxTiUokUgygE4pu9tlL1cpe3QLGHyQ-YpT_ReTTAGG9IDJNoeaSJHxyQrVv7tOxhaAJ9F1ZlnlEspI5l0j9XO6XjtUuPV0c0"/><span class="font-headline-md text-headline-md tracking-tight text-on-surface">M00</span></a><nav class="hidden md:flex items-center gap-6" data-active-classes="text-primary font-headline-md"><a aria-current="page" class="transition-colors text-primary font-headline-md" data-path="features" href="#">Features</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="benchmarks" href="#">Benchmarks</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="architecture" href="#">Architecture</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="pricing" href="#">Pricing</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="docs" href="#">Docs</a></nav></div><div class="flex items-center gap-4"><a class="font-label-md text-label-md text-on-surface-variant hover:text-on-surface px-3 py-2 transition-colors" data-path="sign-in" href="#">Sign In</a><a class="relative inline-flex items-center justify-center px-4 py-2 rounded-lg bg-primary-container text-on-primary-container font-headline-md text-body-sm shadow-[0_0_20px_rgba(14,165,233,0.35)] hover:shadow-[0_0_25px_rgba(14,165,233,0.5)] transition-all duration-300" data-path="launch-m00" href="#">Launch M00</a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-16 bg-background"><div class="flex flex-col w-full">
+<!-- Top Ambient Glow Field -->
+<div class="relative w-full overflow-hidden">
+<div class="absolute -top-40 left-1/2 -translate-x-1/2 w-[720px] h-[360px] bg-primary-container/20 rounded-full blur-[140px] pointer-events-none"></div>
+<div class="absolute top-48 left-1/4 w-[420px] h-[240px] bg-secondary-container/15 rounded-full blur-[120px] pointer-events-none"></div>
+<!-- Hero Section -->
+<section class="relative w-full px-margin-page pt-12 pb-24 max-w-7xl mx-auto flex flex-col items-center text-center">
+<!-- Announcement Pill -->
+<div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-surface-container-high/70 backdrop-blur-md shadow-[0_0_18px_rgba(14,165,233,0.15)] mb-8">
+<span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+<span class="font-label-sm text-label-sm text-primary tracking-wide uppercase">Introducing M00 v2.5</span>
+<span class="w-1 h-1 rounded-full bg-outline"></span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Next-Gen Multimodal Reasoning</span>
+<span class="material-symbols-outlined text-primary text-[16px]">arrow_forward</span>
+</div>
+<!-- Headline -->
+<h1 class="font-headline-xl text-headline-xl sm:text-[44px] sm:leading-[52px] md:text-[56px] md:leading-[64px] font-semibold tracking-tight text-on-surface max-w-4xl">
+        Intelligence Unleashed.<br/>
+<span class="bg-gradient-to-r from-primary via-primary-fixed-dim to-secondary bg-clip-text text-transparent drop-shadow-[0_0_35px_rgba(14,165,233,0.4)]">Built for Builders.</span>
+</h1>
+<!-- Subheadline -->
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mt-6">
+        M00 is the developer-native, ultra-low latency AI assistant equipped with real-time web search, document reasoning, kernel-level code synthesis, and deep research synthesis.
+      </p>
+<!-- CTAs -->
+<div class="flex flex-wrap items-center justify-center gap-4 mt-10">
+<a class="relative inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-primary-container text-on-primary-container font-headline-md text-body-md shadow-[0_0_28px_rgba(14,165,233,0.4)] hover:shadow-[0_0_40px_rgba(14,165,233,0.65)] hover:scale-[1.02] active:scale-[0.99] transition-all" href="#pricing">
+<span class="material-symbols-outlined text-[18px]">bolt</span>
+<span>Try M00 Free</span>
+</a>
+<a class="inline-flex items-center gap-3 px-6 py-3.5 rounded-xl bg-surface-container/70 backdrop-blur-xl text-on-surface hover:text-primary hover:bg-surface-container-high transition-all shadow-md" href="#benchmarks">
+<span class="material-symbols-outlined text-[18px]">equalizer</span>
+<span class="font-headline-md text-body-md">View Live Demo & Benchmarks</span>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-surface-container-highest text-on-surface-variant">⌘K</span>
+</a>
+</div>
+<!-- Live Interactive Product Showcase Frame -->
+<div class="w-full mt-16 rounded-2xl bg-surface-container-low shadow-[0_20px_60px_rgba(0,0,0,0.6)] overflow-hidden">
+<!-- Mock Window Bar -->
+<div class="px-5 py-3.5 bg-surface-container flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-surface-bright"></span>
+<span class="w-3 h-3 rounded-full bg-surface-bright"></span>
+<span class="w-3 h-3 rounded-full bg-surface-bright"></span>
+<span class="font-label-sm text-label-sm text-outline ml-4">session_m00_kernel_opt.rs • FlashAttention-4 Matrix Engine</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="font-label-sm text-label-sm px-2.5 py-1 rounded bg-surface-container-high text-primary flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+              Compute: H100 SXM5
+            </span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Latency: 48ms</span>
+</div>
+</div>
+<!-- Chat Workspace Split View -->
+<div class="grid grid-cols-1 lg:grid-cols-12 text-left bg-surface-container-lowest/80 backdrop-blur-md">
+<!-- Sidebar context stream -->
+<div class="lg:col-span-4 p-5 bg-surface-container/40 flex flex-col gap-4">
+<div class="flex items-center justify-between pb-3">
+<span class="font-label-md text-label-md text-on-surface uppercase tracking-wider flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-[16px]">travel_explore</span>
+                Sources Verified (4)
+              </span>
+<span class="font-label-sm text-label-sm text-primary">Live Indexed</span>
+</div>
+<div class="space-y-2">
+<div class="p-3 rounded-lg bg-surface-container-low hover:bg-surface-container transition-all">
+<div class="flex items-center gap-2 font-label-sm text-label-sm text-on-surface">
+<span class="material-symbols-outlined text-[15px] text-primary">article</span>
+<span>arxiv.org/abs/2403.09452</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 line-clamp-1">Forward-backward async tile memory scheduler on Hopper SM90a.</p>
+</div>
+<div class="p-3 rounded-lg bg-surface-container-low hover:bg-surface-container transition-all">
+<div class="flex items-center gap-2 font-label-sm text-label-sm text-on-surface">
+<span class="material-symbols-outlined text-[15px] text-primary">terminal</span>
+<span>nvidia.com/cuda/kernel-ptx</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 line-clamp-1">WGMMA.MMA_ASYNC PTX intrinsic dispatch pipeline specs.</p>
+</div>
+<div class="p-3 rounded-lg bg-surface-container-low hover:bg-surface-container transition-all">
+<div class="flex items-center gap-2 font-label-sm text-label-sm text-on-surface">
+<span class="material-symbols-outlined text-[15px] text-primary">folder_zip</span>
+<span>local: tensor_v3_bench.parquet</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 line-clamp-1">Evaluated 4.2M test tokens across fp8 / fp16 tile kernels.</p>
+</div>
+</div>
+<!-- Mini Spec Ring Gauge -->
+<div class="mt-4 p-4 rounded-xl bg-surface-container-high/60 flex items-center justify-between">
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant block">Memory Throughput</span>
+<span class="font-headline-md text-headline-md text-on-surface font-semibold">3.35 TB/s</span>
+<span class="font-label-sm text-label-sm text-primary">98.4% Peak Roofline</span>
+</div>
+<svg class="w-14 h-14" viewbox="0 0 36 36">
+<path class="text-surface-variant stroke-current" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3.5"></path>
+<path class="text-primary stroke-current" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="98, 100" stroke-linecap="round" stroke-width="3.5"></path>
+</svg>
+</div>
+</div>
+<!-- Main conversational & code generation window -->
+<div class="lg:col-span-8 p-6 flex flex-col gap-5">
+<!-- User Prompt Bubble -->
+<div class="flex justify-end">
+<div class="max-w-xl px-4 py-3 rounded-xl bg-surface-container-high text-on-surface shadow-sm">
+<p class="font-body-md text-body-md">
+                  Synthesize an optimized Triton fused attention kernel applying block-sparse masking and asynchronous TMA loads for Hopper architecture.
+                </p>
+</div>
+</div>
+<!-- AI Agent Response -->
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center flex-shrink-0 shadow-[0_0_12px_rgba(14,165,233,0.5)]">
+<span class="material-symbols-outlined text-on-primary text-[18px]">psychology</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-2 mb-2">
+<span class="font-headline-md text-body-md font-semibold text-on-surface">M00 Neural Engine</span>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-primary/10 text-primary font-medium">Synthesized in 184ms</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-3">
+                  Below is the production-grade fused Triton kernel with TMA async copy descriptors and pipeline barrier synchronization tailored to eliminate global SRAM contention.
+                </p>
+<!-- Code Block Component -->
+<div class="rounded-xl bg-surface-container-lowest overflow-hidden shadow-inner">
+<div class="px-4 py-2.5 bg-surface-container flex items-center justify-between">
+<span class="font-code text-code text-on-surface-variant flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-[16px]">code</span>
+                      triton_hopper_sparse_attn.py
+                    </span>
+<button class="flex items-center gap-1 font-label-sm text-label-sm text-primary hover:text-primary-fixed transition-colors" onclick="this.innerHTML='<span class=\'material-symbols-outlined text-[14px]\'>check</span> Copied!'; setTimeout(() => this.innerHTML='<span class=\'material-symbols-outlined text-[14px]\'>content_copy</span> Copy', 1500)">
+<span class="material-symbols-outlined text-[14px]">content_copy</span> Copy
+                    </button>
+</div>
+<pre class="p-4 font-code text-code text-on-surface overflow-x-auto leading-relaxed"><code><span class="text-secondary">@triton.jit</span>
+<span class="text-primary-container">def</span> <span class="text-primary">_fused_hopper_attn_kernel</span>(
+    Q, K, V, Out, sm_scale,
+    BLOCK_M: tl.constexpr = 128, BLOCK_N: tl.constexpr = 64
+):
+    pid_m = tl.program_id(0)
+    <span class="text-outline">// Acquire async Tensor Memory Accelerator descriptors</span>
+    tma_desc = tl.extra.cuda.experimental_device_tensor()
+    tl.inline_asm_barrier()
+    <span class="text-outline">// Warpgroup Matrix-Multiply-Accumulate pipeline</span>
+    acc = tl.zeros([BLOCK_M, BLOCK_N], dtype=tl.float32)
+    <span class="text-primary-container">for</span> start_n <span class="text-primary-container">in</span> range(0, K.shape[1], BLOCK_N):
+        acc = tl.dot_async(Q_tile, K_tile, acc)
+    tl.store(Out + offs_out, acc.to(tl.float16))</code></pre>
+</div>
+</div>
+</div>
+<!-- Emulated Input Bar Inside Showcase -->
+<div class="mt-2 p-2.5 rounded-xl bg-surface-container flex items-center gap-3">
+<div class="flex items-center gap-1.5 text-on-surface-variant px-2">
+<span class="material-symbols-outlined text-[20px] text-primary">attach_file</span>
+<span class="material-symbols-outlined text-[20px]">tune</span>
+</div>
+<input class="w-full bg-transparent font-body-sm text-body-sm text-on-surface-variant focus:outline-none cursor-default" readonly="" type="text" value="Benchmark against PyTorch 2.4 SDPA flash-attn v3..."/>
+<button class="px-3.5 py-1.5 rounded-lg bg-primary-container text-on-primary-container font-label-md text-label-md flex items-center gap-1 shadow-[0_0_12px_rgba(14,165,233,0.3)]">
+<span>Run</span>
+<span class="material-symbols-outlined text-[16px]">arrow_upward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Social Proof / Trusted By -->
+<section class="w-full py-12 bg-surface-container-lowest/90">
+<div class="max-w-7xl mx-auto px-margin-page flex flex-col items-center">
+<span class="font-label-md text-label-md uppercase tracking-widest text-on-surface-variant mb-8 text-center">
+        Powering engineering & research velocity at next-gen labs
+      </span>
+<div class="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-8 items-center justify-items-center opacity-70">
+<div class="flex items-center gap-2 font-headline-md text-headline-md text-on-surface font-semibold tracking-tight hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-primary text-[24px]">layers</span> ScaleEngine
+        </div>
+<div class="flex items-center gap-2 font-headline-md text-headline-md text-on-surface font-semibold tracking-tight hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-primary text-[24px]">change_history</span> Vercel Lab
+        </div>
+<div class="flex items-center gap-2 font-headline-md text-headline-md text-on-surface font-semibold tracking-tight hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-primary text-[24px]">database</span> Supabase
+        </div>
+<div class="flex items-center gap-2 font-headline-md text-headline-md text-on-surface font-semibold tracking-tight hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-primary text-[24px]">all_inclusive</span> Anthropic Net
+        </div>
+<div class="flex items-center gap-2 font-headline-md text-headline-md text-on-surface font-semibold tracking-tight hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-primary text-[24px]">face</span> HuggingSpace
+        </div>
+<div class="flex items-center gap-2 font-headline-md text-headline-md text-on-surface font-semibold tracking-tight hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-primary text-[24px]">view_timeline</span> Linear Team
+        </div>
+</div>
+</div>
+</section>
+<!-- Core Pillars Bento Grid -->
+<section class="w-full py-20 px-margin-page max-w-7xl mx-auto">
+<div class="flex flex-col items-center text-center mb-16">
+<span class="font-label-sm text-label-sm px-3 py-1 rounded-full bg-surface-container-high text-primary uppercase tracking-wider mb-3">Architectural Pillars</span>
+<h2 class="font-headline-xl text-headline-xl sm:text-[36px] sm:leading-[44px] text-on-surface font-semibold">
+        Engineered for Extreme Latency & Cognitive Depth
+      </h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-xl mt-3">
+        Built from the ground up for technical leads, kernel developers, and researchers demanding exactitude.
+      </p>
+</div>
+<!-- Bento Grid Container -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Card 1: Large Featured Card -->
+<div class="md:col-span-2 rounded-2xl bg-surface-container p-8 flex flex-col justify-between relative overflow-hidden group shadow-lg">
+<div class="absolute -right-16 -top-16 w-80 h-80 bg-primary-container/10 rounded-full blur-3xl pointer-events-none group-hover:bg-primary-container/20 transition-all duration-700"></div>
+<div>
+<div class="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center text-primary mb-6 shadow-sm">
+<span class="material-symbols-outlined text-[28px]">travel_explore</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-wider">Zero Hallucination Retrieval</span>
+<h3 class="font-headline-lg text-headline-lg text-on-surface mt-1 mb-3">Real-Time Neural Web Search</h3>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-xl">
+            Continuously crawls, indexes, and synthesizes 200M+ real-time web artifacts, GitHub commits, and arXiv preprints with explicit pinpoint line-by-line citation hashes.
+          </p>
+</div>
+<!-- Visual element for Real-time Search -->
+<div class="mt-8 rounded-xl bg-surface-container-low p-4 space-y-2.5">
+<div class="flex items-center justify-between font-label-sm text-label-sm text-outline">
+<span>Query: "Hopper H100 asynchronous FP8 barrier deadlock solutions"</span>
+<span class="text-primary font-mono">24 sources analyzed in 41ms</span>
+</div>
+<div class="w-full bg-surface-container-highest rounded-full h-1.5 overflow-hidden">
+<div class="bg-primary h-full w-4/5 rounded-full"></div>
+</div>
+<div class="flex items-center gap-3 pt-1">
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-primary">verified</span> NVIDIA Docs
+            </span>
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-primary">verified</span> PyTorch Core Commit #94821
+            </span>
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-primary">verified</span> arXiv:2408.10291
+            </span>
+</div>
+</div>
+</div>
+<!-- Card 2: Kernel & Hardware Code Synthesis -->
+<div class="rounded-2xl bg-surface-container p-8 flex flex-col justify-between relative overflow-hidden shadow-lg">
+<div>
+<div class="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center text-primary mb-6">
+<span class="material-symbols-outlined text-[28px]">memory</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-wider">Hardware Accelerated</span>
+<h3 class="font-headline-lg text-headline-lg text-on-surface mt-1 mb-3">Kernel Code Synthesis</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">
+            Generates flawless CUDA, Triton, SIMD AVX-512, and Rust unsafe blocks. Tuned to minimize register spills and maximize cache efficiency.
+          </p>
+</div>
+<div class="mt-6 p-3.5 rounded-xl bg-surface-container-low font-code text-code text-on-surface-variant">
+<div class="text-primary">#pragma unroll</div>
+<div>__shared__ half s_tile[128][64];</div>
+<div class="text-secondary">asm volatile("cp.async.commit_group;");</div>
+</div>
+</div>
+<!-- Card 3: Multi-Modal Document Engine -->
+<div class="rounded-2xl bg-surface-container p-8 flex flex-col justify-between relative overflow-hidden shadow-lg">
+<div>
+<div class="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center text-primary mb-6">
+<span class="material-symbols-outlined text-[28px]">description</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-wider">Massive Ingestion</span>
+<h3 class="font-headline-lg text-headline-lg text-on-surface mt-1 mb-3">Multi-Modal Document Engine</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">
+            Ingest 500-page PDF specifications, billion-row parquet datasets, and architectural CAD schemas with sub-second vector extraction.
+          </p>
+</div>
+<div class="mt-6 flex items-center justify-between p-3.5 rounded-xl bg-surface-container-low">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">picture_as_pdf</span>
+<span class="font-body-sm text-body-sm text-on-surface">microarchitecture_v4.pdf</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-mono">1.2M tokens</span>
+</div>
+</div>
+<!-- Card 4: Zero-Telemetry Privacy Mode -->
+<div class="md:col-span-2 rounded-2xl bg-surface-container p-8 flex flex-col justify-between relative overflow-hidden shadow-lg">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+<div>
+<div class="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center text-primary mb-6">
+<span class="material-symbols-outlined text-[28px]">shield_lock</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-wider">Cryptographic Boundary</span>
+<h3 class="font-headline-lg text-headline-lg text-on-surface mt-1 mb-3">Zero-Telemetry Confidential Mode</h3>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-xl">
+              Strict memory isolation ensures prompts, weights, and responses are executed within encrypted confidential enclaves (AMD SEV-SNP & Intel TDX). No data retention. Ever.
+            </p>
+</div>
+<div class="flex flex-col gap-3 min-w-[220px]">
+<div class="p-3 rounded-lg bg-surface-container-low flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]">lock</span>
+<div>
+<span class="font-label-sm text-label-sm text-on-surface block">SOC2 Type II</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Continuous audit log</span>
+</div>
+</div>
+<div class="p-3 rounded-lg bg-surface-container-low flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]">vpn_key</span>
+<div>
+<span class="font-label-sm text-label-sm text-on-surface block">BYO Keys / KMS</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Customer-managed vault</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Performance & Benchmarks Section -->
+<section class="w-full py-20 px-margin-page max-w-7xl mx-auto" id="benchmarks">
+<div class="flex flex-col items-center text-center mb-14">
+<span class="font-label-sm text-label-sm px-3 py-1 rounded-full bg-surface-container-high text-primary uppercase tracking-wider mb-3">Verified Metrics</span>
+<h2 class="font-headline-xl text-headline-xl sm:text-[36px] sm:leading-[44px] text-on-surface font-semibold">
+        Unmatched Execution Velocity
+      </h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-xl mt-3">
+        Engineered with a custom inference runtime yielding unmatched time-to-first-token and SWE-bench performance.
+      </p>
+</div>
+<!-- Comparison Matrix Card -->
+<div class="w-full rounded-2xl bg-surface-container overflow-hidden shadow-xl">
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-surface-container-high/80 text-on-surface font-label-md text-label-md uppercase tracking-wider">
+<th class="p-5">Metric / Model</th>
+<th class="p-5 text-primary bg-primary/10">M00 v2.5 (Neural)</th>
+<th class="p-5 text-on-surface-variant">Claude 3.5 Sonnet</th>
+<th class="p-5 text-on-surface-variant">GPT-4o</th>
+<th class="p-5 text-on-surface-variant">Perplexity Pro</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container-high">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-high/40 transition-colors">
+<td class="p-5 font-headline-md text-body-md text-on-surface">
+<div class="font-semibold">Time to First Token (TTFT)</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Cold start latency from request dispatch</div>
+</td>
+<td class="p-5 bg-primary/5 font-mono font-bold text-headline-md text-primary">52 ms</td>
+<td class="p-5 font-mono text-body-md text-on-surface-variant">190 ms</td>
+<td class="p-5 font-mono text-body-md text-on-surface-variant">175 ms</td>
+<td class="p-5 font-mono text-body-md text-on-surface-variant">240 ms</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-high/40 transition-colors">
+<td class="p-5 font-headline-md text-body-md text-on-surface">
+<div class="font-semibold">Generation Throughput</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Tokens generated per second per user stream</div>
+</td>
+<td class="p-5 bg-primary/5 font-mono font-bold text-headline-md text-primary">242 tok/s</td>
+<td class="p-5 font-mono text-body-md text-on-surface-variant">88 tok/s</td>
+<td class="p-5 font-mono text-body-md text-on-surface-variant">112 tok/s</td>
+<td class="p-5 font-mono text-body-md text-on-surface-variant">74 tok/s</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-high/40 transition-colors">
+<td class="p-5 font-headline-md text-body-md text-on-surface">
+<div class="font-semibold">SWE-bench Verified</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Autonomous resolution of real GitHub issues</div>
+</td>
+<td class="p-5 bg-primary/5 font-mono font-bold text-headline-md text-primary">48.9%</td>
+<td class="p-5 font-mono text-body-md text-on-surface-variant">33.4%</td>
+<td class="p-5 font-mono text-body-md text-on-surface-variant">29.1%</td>
+<td class="p-5 font-mono text-body-md text-on-surface-variant">18.5%</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-high/40 transition-colors">
+<td class="p-5 font-headline-md text-body-md text-on-surface">
+<div class="font-semibold">MMLU-Pro Complex Reasoning</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Rigorous multi-discipline reasoning benchmark</div>
+</td>
+<td class="p-5 bg-primary/5 font-mono font-bold text-headline-md text-primary">89.4%</td>
+<td class="p-5 font-mono text-body-md text-on-surface-variant">78.0%</td>
+<td class="p-5 font-mono text-body-md text-on-surface-variant">77.2%</td>
+<td class="p-5 font-mono text-body-md text-on-surface-variant">69.8%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<!-- Interactive Terminal & API Integration -->
+<section class="w-full py-20 px-margin-page max-w-7xl mx-auto">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+<!-- Left Explanation -->
+<div class="lg:col-span-5 flex flex-col gap-5">
+<span class="font-label-sm text-label-sm px-3 py-1 rounded-full bg-surface-container-high text-primary uppercase tracking-wider self-start">Developer SDK</span>
+<h2 class="font-headline-xl text-headline-xl sm:text-[34px] sm:leading-[42px] text-on-surface font-semibold">
+          3 Lines of Code to Supercharge Your Systems
+        </h2>
+<p class="font-body-md text-body-md text-on-surface-variant">
+          Seamlessly integrate M00 into existing CI/CD pipelines, agent frameworks, or high-throughput microservices via our asynchronous streaming endpoints.
+        </p>
+<div class="space-y-3 pt-2">
+<div class="flex items-center gap-3">
+<span class="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</span>
+<span class="font-body-md text-body-md text-on-surface">Native WebSocket & SSE token stream</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</span>
+<span class="font-body-md text-body-md text-on-surface">Strict JSON schema validation outputs</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</span>
+<span class="font-body-md text-body-md text-on-surface">Autonomous tool call dispatch engine</span>
+</div>
+</div>
+</div>
+<!-- Right Interactive Terminal Box -->
+<div class="lg:col-span-7 rounded-2xl bg-surface-container-lowest overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.7)]">
+<!-- Terminal Header with Tabs -->
+<div class="px-4 py-3 bg-surface-container flex items-center justify-between">
+<div class="flex items-center gap-2">
+<button class="px-3 py-1 rounded font-label-sm text-label-sm bg-surface-container-high text-primary" id="tab-curl" onclick="switchTab('curl')">curl</button>
+<button class="px-3 py-1 rounded font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface" id="tab-py" onclick="switchTab('py')">Python</button>
+<button class="px-3 py-1 rounded font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface" id="tab-ts" onclick="switchTab('ts')">TypeScript</button>
+</div>
+<span class="font-label-sm text-label-sm text-outline">POST /v1/chat/completions</span>
+</div>
+<!-- Terminal Content Snippet -->
+<div class="p-6 font-code text-code text-on-surface overflow-x-auto min-h-[220px]">
+<div class="space-y-1 leading-relaxed" id="code-curl">
+<span class="text-secondary">curl</span> https://api.m00.ai/v1/chat/completions \<br/>
+              -H <span class="text-primary-fixed-dim">"Authorization: Bearer $M00_API_KEY"</span> \<br/>
+              -H <span class="text-primary-fixed-dim">"Content-Type: application/json"</span> \<br/>
+              -d '{<br/>
+                <span class="text-primary">"model"</span>: <span class="text-primary-fixed-dim">"m00-v2.5-neural"</span>,<br/>
+                <span class="text-primary">"stream"</span>: <span class="text-secondary">true</span>,<br/>
+                <span class="text-primary">"messages"</span>: [{"role": "user", "content": "Analyze memory fence in CUDA kernel"}]<br/>
+              }'
+          </div>
+<div class="hidden space-y-1 leading-relaxed" id="code-py">
+<span class="text-secondary">from</span> m00 <span class="text-secondary">import</span> M00Client<br/><br/>
+            client = M00Client(api_key=<span class="text-primary-fixed-dim">"m00_live_sec_..."</span>)<br/>
+            stream = client.chat.stream(<br/>
+                model=<span class="text-primary-fixed-dim">"m00-v2.5-neural"</span>,<br/>
+                prompt=<span class="text-primary-fixed-dim">"Analyze memory fence in CUDA kernel"</span>,<br/>
+                reasoning_effort=<span class="text-primary-fixed-dim">"deep"</span><br/>
+            )<br/>
+<span class="text-secondary">for</span> chunk <span class="text-secondary">in</span> stream: print(chunk.delta, end=<span class="text-primary-fixed-dim">""</span>)
+          </div>
+<div class="hidden space-y-1 leading-relaxed" id="code-ts">
+<span class="text-secondary">import</span> { M00 } <span class="text-secondary">from</span> <span class="text-primary-fixed-dim">'@m00/sdk'</span>;<br/><br/>
+<span class="text-secondary">const</span> m00 = <span class="text-secondary">new</span> M00({ apiKey: process.env.M00_KEY });<br/>
+<span class="text-secondary">const</span> { stream } = <span class="text-secondary">await</span> m00.reason({<br/>
+              model: <span class="text-primary-fixed-dim">'m00-v2.5-neural'</span>,<br/>
+              input: <span class="text-primary-fixed-dim">'Analyze memory fence in CUDA kernel'</span><br/>
+            });<br/>
+<span class="text-secondary">for await</span> (<span class="text-secondary">const</span> tok <span class="text-secondary">of</span> stream) process.stdout.write(tok);
+          </div>
+</div>
+</div>
+</div>
+</section>
+<!-- Pricing Tiers Section -->
+<section class="w-full py-20 px-margin-page max-w-7xl mx-auto" id="pricing">
+<div class="flex flex-col items-center text-center mb-16">
+<span class="font-label-sm text-label-sm px-3 py-1 rounded-full bg-surface-container-high text-primary uppercase tracking-wider mb-3">Transparent Compute Pricing</span>
+<h2 class="font-headline-xl text-headline-xl sm:text-[36px] sm:leading-[44px] text-on-surface font-semibold">
+        Scales with Your Cognitive Workload
+      </h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-lg mt-3">
+        Start free with zero credit card required. Upgrade as your codebase or research pipeline expands.
+      </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+<!-- Tier 1: Developer Free -->
+<div class="rounded-2xl bg-surface-container p-8 flex flex-col justify-between shadow-lg">
+<div>
+<span class="font-headline-md text-headline-md text-on-surface font-semibold">Developer</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">For casual builders and prompt experimentation.</p>
+<div class="mt-6 flex items-baseline gap-1">
+<span class="font-headline-xl text-[44px] font-bold text-on-surface">$0</span>
+<span class="font-body-md text-body-md text-on-surface-variant">/ month</span>
+</div>
+<div class="mt-8 space-y-3.5 font-body-sm text-body-sm text-on-surface">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px]">check</span>
+<span>Core M00-Lite reasoning model</span>
+</div>
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px]">check</span>
+<span>50 real-time web searches / day</span>
+</div>
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px]">check</span>
+<span>32k context token window</span>
+</div>
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px]">check</span>
+<span>Community Discord support</span>
+</div>
+</div>
+</div>
+<a class="mt-8 w-full py-3 rounded-xl bg-surface-container-high text-on-surface text-center font-headline-md text-body-sm hover:bg-surface-bright transition-colors" data-path="sign-in" href="#">
+          Get Started Free
+        </a>
+</div>
+<!-- Tier 2: Pro (Featured with Electric Cyan Glow) -->
+<div class="rounded-2xl bg-surface-container-high p-8 flex flex-col justify-between shadow-[0_0_40px_rgba(14,165,233,0.22)] relative">
+<div class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-primary text-on-primary font-label-sm text-label-sm font-semibold tracking-wider uppercase shadow-md">
+          Most Popular
+        </div>
+<div>
+<span class="font-headline-md text-headline-md text-on-surface font-semibold">Pro Architect</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">For production engineers, architects & researchers.</p>
+<div class="mt-6 flex items-baseline gap-1">
+<span class="font-headline-xl text-[44px] font-bold text-primary">$20</span>
+<span class="font-body-md text-body-md text-on-surface-variant">/ month</span>
+</div>
+<div class="mt-8 space-y-3.5 font-body-sm text-body-sm text-on-surface">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px]">check</span>
+<span>Unlimited M00-v2.5 Neural reasoning</span>
+</div>
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px]">check</span>
+<span>Priority H100 dedicated queue</span>
+</div>
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px]">check</span>
+<span>Unlimited real-time academic search</span>
+</div>
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px]">check</span>
+<span>128k context window + 1GB file ingestion</span>
+</div>
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px]">check</span>
+<span>Early access to Kernel & Agent tools</span>
+</div>
+</div>
+</div>
+<a class="mt-8 w-full py-3 rounded-xl bg-primary text-on-primary text-center font-headline-md text-body-sm shadow-[0_0_20px_rgba(14,165,233,0.4)] hover:shadow-[0_0_30px_rgba(14,165,233,0.65)] hover:scale-[1.01] transition-all" data-path="launch-m00" href="#">
+          Upgrade to Pro
+        </a>
+</div>
+<!-- Tier 3: Enterprise -->
+<div class="rounded-2xl bg-surface-container p-8 flex flex-col justify-between shadow-lg">
+<div>
+<span class="font-headline-md text-headline-md text-on-surface font-semibold">Enterprise Hub</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">For organizations requiring on-prem & custom fine-tunes.</p>
+<div class="mt-6 flex items-baseline gap-1">
+<span class="font-headline-xl text-[44px] font-bold text-on-surface">Custom</span>
+</div>
+<div class="mt-8 space-y-3.5 font-body-sm text-body-sm text-on-surface">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px]">check</span>
+<span>Dedicated isolated VPC / on-prem deployment</span>
+</div>
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px]">check</span>
+<span>Proprietary weights fine-tuning engine</span>
+</div>
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px]">check</span>
+<span>Zero-telemetry cryptographic guarantee</span>
+</div>
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px]">check</span>
+<span>99.99% uptime SLA & dedicated Slack pod</span>
+</div>
+</div>
+</div>
+<a class="mt-8 w-full py-3 rounded-xl bg-surface-container-high text-on-surface text-center font-headline-md text-body-sm hover:bg-surface-bright transition-colors" data-path="docs" href="#">
+          Contact Enterprise
+        </a>
+</div>
+</div>
+</section>
+<!-- Final Call to Action Section with Radial Glow -->
+<section class="w-full py-24 px-margin-page max-w-7xl mx-auto">
+<div class="relative w-full rounded-3xl bg-surface-container-low p-10 md:p-16 overflow-hidden flex flex-col items-center text-center shadow-[0_20px_70px_rgba(0,0,0,0.8)]">
+<!-- Glow background -->
+<div class="absolute inset-0 bg-radial from-primary-container/20 via-surface-container-low/80 to-surface-container-low pointer-events-none"></div>
+<div class="relative z-10 max-w-2xl flex flex-col items-center">
+<div class="w-14 h-14 rounded-2xl bg-surface-container-highest flex items-center justify-center text-primary mb-6 shadow-md">
+<span class="material-symbols-outlined text-[32px]">auto_awesome</span>
+</div>
+<h2 class="font-headline-xl text-headline-xl sm:text-[40px] sm:leading-[48px] font-semibold text-on-surface">
+          Experience the Fastest Thinking Partner on Earth.
+        </h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-4 max-w-lg">
+          Zero friction. Jump straight into the neural workspace and accelerate your engineering capabilities immediately.
+        </p>
+<!-- Instant Access Input Bar -->
+<form class="w-full max-w-md mt-8 flex flex-col sm:flex-row gap-2" onsubmit="event.preventDefault(); alert('Welcome to M00! Neural workspace initializing...');">
+<input class="w-full px-4 py-3 rounded-xl bg-surface-container-high text-on-surface placeholder:text-on-surface-variant font-body-sm text-body-sm focus:outline-none focus:bg-surface-bright transition-all shadow-inner" placeholder="Enter your work email..." required="" type="email"/>
+<button class="whitespace-nowrap px-6 py-3 rounded-xl bg-primary text-on-primary font-headline-md text-body-sm shadow-[0_0_24px_rgba(14,165,233,0.4)] hover:shadow-[0_0_35px_rgba(14,165,233,0.6)] transition-all" type="submit">
+            Instant Access
+          </button>
+</form>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-[15px] text-primary">verified_user</span>
+          No credit card required • 100 free daily tokens • Instant API key
+        </span>
+</div>
+</div>
+</section>
+</div>
+<script>
+  function switchTab(lang) {
+    const tabs = ['curl', 'py', 'ts'];
+    tabs.forEach(t => {
+      const codeEl = document.getElementById('code-' + t);
+      const btnEl = document.getElementById('tab-' + t);
+      if (t === lang) {
+        codeEl.classList.remove('hidden');
+        btnEl.classList.add('bg-surface-container-high', 'text-primary');
+        btnEl.classList.remove('text-on-surface-variant');
+      } else {
+        codeEl.classList.add('hidden');
+        btnEl.classList.remove('bg-surface-container-high', 'text-primary');
+        btnEl.classList.add('text-on-surface-variant');
+      }
+    });
+  }
+
+  // Keyboard shortcut listener for CMD+K
+  window.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      const bench = document.getElementById('benchmarks');
+      if (bench) bench.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+</script></main><footer class="w-full bg-surface-container-lowest mt-16"><div class="w-full px-margin-page py-12 flex flex-col gap-10"><div class="grid grid-cols-1 md:grid-cols-4 gap-8"><div class="flex flex-col gap-4"><div class="flex items-center gap-2"><span class="font-headline-md text-headline-md text-primary">M00</span><span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-surface-container-high text-primary">v2.4-neural</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">Autonomous intelligence engine engineered for developer velocity, technical systems architecture, and deep logical synthesis.</p><div class="flex items-center gap-2 font-label-sm text-label-sm text-on-surface-variant"><span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span><span>API Systems Operational (99.98%)</span></div></div><div class="flex flex-col gap-3"><span class="font-label-md text-label-md uppercase tracking-wider text-on-surface">Product</span><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="features" href="#">Neural Capabilities</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="benchmarks" href="#">Model Benchmarks</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="architecture" href="#">Core Architecture</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="pricing" href="#">Enterprise Pricing</a></div><div class="flex flex-col gap-3"><span class="font-label-md text-label-md uppercase tracking-wider text-on-surface">Developers</span><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="docs" href="#">API Reference</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="docs" href="#">SDKs & Toolkits</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="docs" href="#">Changelog</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="docs" href="#">System Status</a></div><div class="flex flex-col gap-3"><span class="font-label-md text-label-md uppercase tracking-wider text-on-surface">Ecosystem</span><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="docs" href="#">Discord Guild</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="docs" href="#">GitHub Network</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="docs" href="#">Research Papers</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="docs" href="#">Security & Compliance</a></div></div><div class="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 font-label-sm text-label-sm text-on-surface-variant"><div class="flex items-center gap-6"><a class="hover:text-on-surface transition-colors" data-path="privacy-policy" href="#">Privacy Policy</a><a class="hover:text-on-surface transition-colors" data-path="terms-of-service" href="#">Terms of Service</a><a class="hover:text-on-surface transition-colors" data-path="acceptable-use" href="#">Acceptable Use</a></div><div>© 2025 M00 Autonomous Systems Inc. All computational rights reserved.</div></div></div></footer></body></html>

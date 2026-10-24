@@ -3,7 +3,7 @@
  * All requests go through Vite's /api proxy → http://localhost:8000
  */
 
-import type { ThinkingLevel } from '../types';
+import type { ThinkingLevel, MediaAttachment } from '../types';
 
 const BASE = '/api';
 
@@ -29,7 +29,7 @@ export interface ApiChat {
 // ─── Chat CRUD ───────────────────────────────────────────────────────────────
 
 export async function apiListChats(): Promise<ApiChat[]> {
-  const res = await fetch(`${BASE}/chats`);
+  const res = await fetch(`${BASE}/chats`, { credentials: 'include' });
   if (!res.ok) throw new Error(`Failed to list chats: ${res.status}`);
   return res.json();
 }
@@ -37,6 +37,7 @@ export async function apiListChats(): Promise<ApiChat[]> {
 export async function apiCreateChat(title = 'New Chat'): Promise<ApiChat> {
   const res = await fetch(`${BASE}/chats`, {
     method: 'POST',
+    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ title }),
   });
@@ -45,7 +46,7 @@ export async function apiCreateChat(title = 'New Chat'): Promise<ApiChat> {
 }
 
 export async function apiGetChat(chatId: string): Promise<ApiChat> {
-  const res = await fetch(`${BASE}/chats/${chatId}`);
+  const res = await fetch(`${BASE}/chats/${chatId}`, { credentials: 'include' });
   if (!res.ok) throw new Error(`Failed to get chat: ${res.status}`);
   return res.json();
 }
@@ -53,6 +54,7 @@ export async function apiGetChat(chatId: string): Promise<ApiChat> {
 export async function apiRenameChat(chatId: string, title: string): Promise<ApiChat> {
   const res = await fetch(`${BASE}/chats/${chatId}`, {
     method: 'PATCH',
+    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ title }),
   });
@@ -61,7 +63,7 @@ export async function apiRenameChat(chatId: string, title: string): Promise<ApiC
 }
 
 export async function apiDeleteChat(chatId: string): Promise<void> {
-  const res = await fetch(`${BASE}/chats/${chatId}`, { method: 'DELETE' });
+  const res = await fetch(`${BASE}/chats/${chatId}`, { method: 'DELETE', credentials: 'include' });
   if (!res.ok && res.status !== 204) throw new Error(`Failed to delete chat: ${res.status}`);
 }
 
@@ -82,6 +84,7 @@ export interface ScrapeResponse extends UrlContext {
 export async function apiScrapeUrl(url: string, maxChars = 10000): Promise<ScrapeResponse> {
   const res = await fetch(`${BASE}/scrape`, {
     method: 'POST',
+    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ url, max_chars: maxChars }),
   });
@@ -95,11 +98,14 @@ export async function apiScrapeUrl(url: string, maxChars = 10000): Promise<Scrap
 // ─── SSE Streaming ───────────────────────────────────────────────────────────
 
 export interface StreamEvent {
-  type: 'thinking' | 'content' | 'done' | 'error' | 'sources' | 'images';
+  type: 'thinking' | 'content' | 'done' | 'error' | 'sources' | 'images' | 'linkedin' | 'map_route';
   text?: string;
   message_id?: string;
   sources?: SearchSource[];
   images?: ImageResult[];
+  profile?: any;
+  origin?: string;
+  destination?: string;
 }
 
 export interface ImageResult {
@@ -127,25 +133,33 @@ export async function streamMessage(
   chatId: string,
   messages: MessagePayload[],
   thinkingLevel: ThinkingLevel,
-  webSearch: boolean,
   onThinking: (chunk: string) => void,
   onContent: (chunk: string) => void,
   onDone: (messageId: string) => void,
   onError: (err: string) => void,
   onSources: (sources: SearchSource[]) => void,
   onImages: (images: ImageResult[]) => void,
+  onLinkedIn?: (profile: any) => void,
+  onMapRoute?: (route: any) => void,
   signal?: AbortSignal,
+  attachments: MediaAttachment[] = [],
 ): Promise<void> {
   let response: Response;
 
   try {
     response = await fetch(`${BASE}/chats/${chatId}/stream`, {
       method: 'POST',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         messages,
         thinking_level: thinkingLevel,
-        web_search: webSearch,
+        attachments: attachments.map((attachment) => ({
+          name: attachment.name,
+          media_type: attachment.mediaType,
+          mime_type: attachment.mimeType,
+          data_url: attachment.dataUrl,
+        })),
       }),
       signal,
     });
@@ -186,6 +200,10 @@ export async function streamMessage(
             onImages(event.images);
           } else if (event.type === 'sources' && event.sources) {
             onSources(event.sources);
+          } else if (event.type === 'linkedin' && event.profile && onLinkedIn) {
+            onLinkedIn(event.profile);
+          } else if (event.type === 'map_route' && event.origin && event.destination && onMapRoute) {
+            onMapRoute({ origin: event.origin, destination: event.destination });
           } else if (event.type === 'thinking' && event.text) {
             onThinking(event.text);
           } else if (event.type === 'content' && event.text) {

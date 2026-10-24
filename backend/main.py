@@ -1,7 +1,7 @@
 import sys
 import asyncio
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 if sys.platform == "win32":
@@ -14,6 +14,8 @@ from routers.chats import router as chats_router
 from routers.stream import router as stream_router
 from routers.knowledge import router as knowledge_router
 from routers.scrape import router as scrape_router
+from routers.auth import router as auth_router
+from services.auth import get_current_user
 
 
 @asynccontextmanager
@@ -46,14 +48,19 @@ def create_app() -> FastAPI:
     )
 
     # Routers
+    app.include_router(auth_router)
     app.include_router(chats_router)
     app.include_router(stream_router)
-    app.include_router(knowledge_router)
-    app.include_router(scrape_router)
+    app.include_router(knowledge_router, dependencies=[Depends(get_current_user)])
+    app.include_router(scrape_router, dependencies=[Depends(get_current_user)])
 
     @app.get("/health")
     async def health():
-        return {"status": "ok", "model": settings.nvidia_model}
+        return {
+            "status": "ok",
+            "model": settings.nvidia_model,
+            "multimodal_model": settings.nvidia_multimodal_model,
+        }
 
     return app
 

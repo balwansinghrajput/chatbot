@@ -51,7 +51,6 @@ interface ChatStore {
 
   // Settings (local preference)
   setThinkingLevel: (level: ThinkingLevel) => void;
-  setWebSearch: (enabled: boolean) => void;
 
   // UI
   toggleSidebar: () => void;
@@ -68,7 +67,6 @@ export const useChatStore = create<ChatStore>()((set, get) => ({
   activeChatId: null,
   settings: {
     thinkingLevel: 'medium',
-    webSearch: false,
     model: 'thinkingmachines/inkling',
   },
   isSidebarOpen: true,
@@ -187,9 +185,6 @@ export const useChatStore = create<ChatStore>()((set, get) => ({
   // ── Settings ──────────────────────────────────────────────────────────────
   setThinkingLevel: (level) =>
     set((state) => ({ settings: { ...state.settings, thinkingLevel: level } })),
-
-  setWebSearch: (enabled) =>
-    set((state) => ({ settings: { ...state.settings, webSearch: enabled } })),
 
   // ── UI ────────────────────────────────────────────────────────────────────
   toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),

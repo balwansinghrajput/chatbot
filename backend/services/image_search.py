@@ -1,8 +1,8 @@
 """
 Image search service.
 
-Primary:  DuckDuckGo Image Search (via ddgs package, free, no key needed)
-Fallback: Unsplash public API (free, curated, high quality)
+Primary:  DuckDuckGo Image Search (free, no key needed)
+Fallback: Wikimedia Commons API (free, stable direct image URLs)
 """
 
 import asyncio
@@ -70,7 +70,31 @@ async def _ddg_image_search(query: str, max_results: int) -> list[dict]:
             print(f"[ImageSearch] DuckDuckGo (sync) returned {len(results)} images")
             return results
     except ImportError:
-        print("[ImageSearch] `ddgs` package not installed. Run: pip install ddgs")
+        # Projects created before the package rename may still install
+        # `duckduckgo-search`, whose public client has the same sync API.
+        try:
+            from duckduckgo_search import DDGS  # type: ignore
+
+            def _legacy_sync() -> list[dict]:
+                with DDGS() as d:
+                    return list(d.images(query, max_results=max_results, safesearch="moderate"))
+
+            loop = asyncio.get_event_loop()
+            raw = await loop.run_in_executor(None, _legacy_sync)
+            if raw:
+                return [
+                    {
+                        "url": r.get("image", ""),
+                        "thumbnail": r.get("thumbnail", r.get("image", "")),
+                        "title": r.get("title", ""),
+                        "source": r.get("url", ""),
+                        "width": r.get("width", 0),
+                        "height": r.get("height", 0),
+                    }
+                    for r in raw if r.get("image")
+                ][:max_results]
+        except Exception as e:
+            print(f"[ImageSearch] DuckDuckGo legacy client error: {e}")
     except Exception as e:
         print(f"[ImageSearch] DuckDuckGo sync error: {e}")
 
@@ -79,26 +103,44 @@ async def _ddg_image_search(query: str, max_results: int) -> list[dict]:
 
 # ─── Fallback: Unsplash API ───────────────────────────────────────────────────
 
-async def _unsplash_search(query: str, max_results: int) -> list[dict]:
-    """Use Unsplash's free public search (no key required for basic access)."""
+async def _commons_search(query: str, max_results: int) -> list[dict]:
+    """Search Wikimedia Commons for stable, directly renderable image URLs."""
     try:
-        # Unsplash source provides random relevant images (free, no key needed)
+        params = {
+            "action": "query",
+            "generator": "search",
+            "gsrsearch": query,
+            "gsrnamespace": 6,
+            "gsrlimit": min(max_results, 10),
+            "prop": "imageinfo",
+            "iiprop": "url|size",
+            "iiurlwidth": 640,
+            "format": "json",
+            "origin": "*",
+        }
+        headers = {"User-Agent": "M00-AI-Assistant/1.0 (image search)"}
+        async with httpx.AsyncClient(timeout=15, follow_redirects=True, headers=headers) as client:
+            response = await client.get("https://commons.wikimedia.org/w/api.php", params=params)
+            response.raise_for_status()
+        pages = response.json().get("query", {}).get("pages", {})
         results = []
-        for i in range(min(max_results, 6)):
-            seed = f"{query.replace(' ', '-')}-{i}"
-            url = f"https://source.unsplash.com/400x300/?{query.replace(' ', ',')}&sig={i}"
+        for page in pages.values():
+            info = (page.get("imageinfo") or [{}])[0]
+            url = info.get("url")
+            if not url:
+                continue
             results.append({
                 "url": url,
-                "thumbnail": url,
-                "title": f"{query} - Image {i+1}",
-                "source": "https://unsplash.com",
-                "width": 400,
-                "height": 300,
+                "thumbnail": info.get("thumburl", url),
+                "title": page.get("title", "").removeprefix("File:"),
+                "source": info.get("descriptionurl", "https://commons.wikimedia.org"),
+                "width": info.get("width", 0),
+                "height": info.get("height", 0),
             })
-        print(f"[ImageSearch] Unsplash fallback: generated {len(results)} image URLs")
+        print(f"[ImageSearch] Wikimedia Commons returned {len(results)} images")
         return results
     except Exception as e:
-        print(f"[ImageSearch] Unsplash error: {e}")
+        print(f"[ImageSearch] Wikimedia Commons error: {e}")
     return []
 
 
@@ -117,5 +159,5 @@ async def search_images(query: str, max_results: int = 6) -> list[dict]:
     if results:
         return results[:max_results]
 
-    print("[ImageSearch] Falling back to Unsplash...")
-    return await _unsplash_search(query, max_results)
+    print("[ImageSearch] Falling back to Wikimedia Commons...")
+    return await _commons_search(query, max_results)

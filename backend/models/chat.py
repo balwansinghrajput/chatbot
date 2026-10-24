@@ -56,11 +56,18 @@ class MessageIn(BaseModel):
     role: Literal["user", "assistant"]
     content: str
 
+
+class MediaAttachment(BaseModel):
+    name: str = Field(max_length=255)
+    media_type: Literal["image", "audio", "video"]
+    mime_type: str
+    data_url: str
+
 class StreamRequest(BaseModel):
     messages: list[MessageIn]
     thinking_level: ThinkingLevel = "medium"
-    web_search: bool = False
     use_rag: bool = True
+    attachments: list[MediaAttachment] = Field(default_factory=list, max_length=4)
 
 
 # ─── DB Serialization Helpers ────────────────────────────────────────────────

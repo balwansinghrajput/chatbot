@@ -22,7 +22,10 @@ async def connect():
     _client = AsyncIOMotorClient(settings.mongodb_uri)
     # Verify connection
     await _client.admin.command("ping")
-    print(f"[DB] Connected to MongoDB at {settings.mongodb_uri}")
+    db = _client[settings.db_name]
+    await db["users"].create_index("email", unique=True)
+    await db["chats"].create_index([("user_id", 1), ("updated_at", -1)])
+    print("[DB] Connected to MongoDB")
 
 
 async def disconnect():

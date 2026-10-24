@@ -21,7 +21,7 @@ interface KnowledgePanelProps {
 const BASE = '/api/knowledge';
 
 async function apiFetch(path: string, opts?: RequestInit) {
-  const res = await fetch(`${BASE}${path}`, opts);
+  const res = await fetch(`${BASE}${path}`, { ...opts, credentials: 'include' });
   if (!res.ok) throw new Error(`${res.status}`);
   if (res.status === 204) return null;
   return res.json();

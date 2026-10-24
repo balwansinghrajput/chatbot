@@ -35,6 +35,10 @@ async def get_completion(
             messages=messages,
             temperature=0.0,
             max_tokens=max_tokens,
+            # Internal routing/extraction calls need a terse answer, not a
+            # reasoning trace. Reasoning text can contain tool names and cause
+            # false-positive intent matches in the caller.
+            extra_body={"chat_template_kwargs": {"enable_thinking": False}},
             stream=False,
         )
         if response.choices and response.choices[0].message:
@@ -48,6 +52,8 @@ async def get_completion(
 async def stream_completion(
     messages: list[dict],
     thinking_level: ThinkingLevel = "medium",
+    model: str | None = None,
+    multimodal: bool = False,
 ) -> AsyncGenerator[tuple[TokenType, str], None]:
     """
     Stream a completion from the NVIDIA API.
@@ -62,12 +68,22 @@ async def stream_completion(
     max_tokens = THINKING_BUDGETS.get(thinking_level, 4096)
 
     try:
+        multimodal_buffer = ""
+        multimodal_final_started = False
+        extra_body = {
+            "chat_template_kwargs": {"enable_thinking": not multimodal},
+            "reasoning_budget": max_tokens,
+        }
+        if multimodal:
+            extra_body["top_k"] = 1
+
         stream = await client.chat.completions.create(
-            model=settings.nvidia_model,
+            model=model or settings.nvidia_model,
             messages=messages,
             temperature=1,
             top_p=0.95,
             max_tokens=max_tokens,
+            extra_body=extra_body,
             stream=True,
         )
 
@@ -82,7 +98,24 @@ async def stream_completion(
                 yield ("thinking", reasoning)
 
             if delta.content:
-                yield ("content", delta.content)
+                if not multimodal:
+                    yield ("content", delta.content)
+                elif multimodal_final_started:
+                    yield ("content", delta.content)
+                else:
+                    # Some hosted Omni deployments place private reasoning in
+                    # `content` before a </think> delimiter even when thinking
+                    # is disabled. Buffer until we can return only the answer.
+                    multimodal_buffer += delta.content
+                    if "</think>" in multimodal_buffer:
+                        final_text = multimodal_buffer.split("</think>", 1)[1]
+                        multimodal_final_started = True
+                        multimodal_buffer = ""
+                        if final_text:
+                            yield ("content", final_text)
+
+        if multimodal and not multimodal_final_started and multimodal_buffer:
+            yield ("content", multimodal_buffer)
 
         yield ("done", "")
 
